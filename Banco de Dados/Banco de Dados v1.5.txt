@@ -1,0 +1,79 @@
+create database dbGV;
+use dbGV;
+
+create table clientes(
+ id int(100) auto_increment primary key not null,
+ nome varchar(100) not null,
+ curso varchar(100) not null,
+ cpf  varchar (11) not null unique,
+ saldo decimal(5,2) not null
+ )default charset = utf8mb4;
+ 
+ 
+ create table vendas (
+  id int  auto_increment primary key not null,
+  data varchar(10) not null,
+  valor decimal(5,2) not null, 
+  id_c int not null,
+  foreign key(id_c) references clientes (id)
+ )default charset = utf8mb4;
+ 
+select	* from clientes;
+
+insert into clientes (nome, curso,cpf,saldo) values 
+('Ryan','TI','10203060500',0),
+('João','Lancheria',"04018328056", 0),
+('Luis','TI', '19325546687',0);
+
+
+
+insert into vendas (data , valor, id_c) values
+('05/02/2026',10.00,3),
+('02/02/2026',15.00,1),
+('02/02/2026',20.00,2),
+('02/01/2026',25.00,1),
+('02/01/2026',15.00,1);
+
+-- //MOSTRAR AS COMPRAS DOS CLIENTES
+SELECT c.nome, v.data, v.valor
+FROM clientes c
+JOIN vendas v ON c.id = v.id_c;
+
+
+
+
+-- //SOMAR AS VENDAS E COLOCAR NO SALDO 
+SELECT c.nome,              
+       c.curso, 
+       (c.saldo - IFNULL(SUM(v.valor),0)) AS saldo_atual
+FROM clientes c
+LEFT JOIN vendas v ON c.id = v.id_c
+GROUP BY c.id, c.nome, c.curso, c.saldo;
+
+
+-- drop database dbgv;
+
+
+-- // CONSULTAR TABELA CLIENTES
+select c.id,c.nome,c.curso, c.cpf,(c.saldo - IFNULL(SUM(v.valor),0)) AS saldo_atual from clientes c 
+LEFT JOIN vendas v ON c.id = v.id_c
+GROUP BY c.id, c.nome, c.curso, c.saldo;
+
+
+select	* from vendas;
+
+
+
+DESC clientes;
+
+-- ALTER TABLE clientes    // ALTERAR CPF PARA NÃO SER REPETIDO 
+-- ADD CONSTRAINT unique_cpf UNIQUE (cpf);
+
+-- // CHECAR CPF
+-- SELECT *           
+--  FROM clientes
+-- WHERE cpf = '10203060500';
+
+-- // DELETAR VENDAS DO ID
+-- DELETE FROM vendas
+ -- WHERE id_c = 1;   -- substitua 1 pelo ID do cliente desejado
